@@ -330,3 +330,62 @@ ORDER BY TOTAL_SALARY DESC
 --Q-50. Write an SQL query to fetch the names of workers who earn the highest salary.
 SELECT * FROM WORKER 
 WHERE SALARY IN (SELECT MAX(SALARY) FROM WORKER)
+
+
+--Q-51. List all the workers with their bonuses and print them in the ranked order of highest to lowest bonus 
+SELECT * INTO #TEMPTABLE FROM WORKER W1
+INNER JOIN
+Bonus B1
+ON W1.WORKER_ID = B1.WORKER_REF_ID
+SELECT * FROM #TEMPTABLE
+ORDER BY BONUS_AMOUNT DESC
+DROP TABLE #TEMPTABLE
+
+
+--Q-52. Whoever is not having bonus should be given a default bonus of 1000 and included in the list above 
+SELECT WORKER_ID, FIRST_NAME, SALARY, 1000 AS BONUS_AMOUNT INTO #TEMPTABLE
+FROM   WORKER W1
+WHERE  NOT EXISTS
+  (SELECT *
+   FROM   Bonus B1
+   WHERE  B1.WORKER_REF_ID = W1.WORKER_ID)
+SELECT * FROM #TEMPTABLE
+DROP TABLE #TEMPTABLE
+
+--Q-53. Rank workers by order of number of years of experience based on joining date 
+SELECT 
+	WORKER_ID, FIRST_NAME, LAST_NAME, DEPARTMENT,
+	convert(INT,DATEDIFF(MONTH, JOINING_DATE, GETDATE())/12) AS YEARS,
+	convert(INT,DATEDIFF(MONTH, JOINING_DATE, GETDATE()) % 12) AS MONTHS,
+    convert(varchar(3),DATEDIFF(MONTH, JOINING_DATE, GETDATE())/12) +' years '+
+    convert(varchar(2),DATEDIFF(MONTH, JOINING_DATE, GETDATE()) % 12)+ ' months' 
+    AS EXPERIENCE
+FROM WORKER
+ORDER BY YEARS DESC
+
+
+--Q-54. Update the bonus table to give a bonus of 1000 /- for those people for whom there is no BONUS.
+SELECT * INTO #TEMPTABLE FROM WORKER W1
+FULL OUTER JOIN
+Bonus B1
+ON W1.WORKER_ID = B1.WORKER_REF_ID
+SELECT WORKER_ID, FIRST_NAME, SALARY,  ISNULL(BONUS_AMOUNT, 1000 ) FROM #TEMPTABLE
+ORDER BY BONUS_AMOUNT DESC
+DROP TABLE #TEMPTABLE
+
+
+--Q-55. List the employees who have managers as EXECUTIVE only and rank them in descending order of their salary.
+
+
+
+--Q-56. Display employee details with their total experience in the company, rank them accordingly.
+SELECT * FROM WORKER
+SELECT 
+	WORKER_ID, FIRST_NAME, LAST_NAME, DEPARTMENT,
+	convert(INT,DATEDIFF(MONTH, JOINING_DATE, GETDATE())/12) AS YEARS,
+	convert(INT,DATEDIFF(MONTH, JOINING_DATE, GETDATE()) % 12) AS MONTHS,
+    convert(varchar(3),DATEDIFF(MONTH, JOINING_DATE, GETDATE())/12) +' years '+
+    convert(varchar(2),DATEDIFF(MONTH, JOINING_DATE, GETDATE()) % 12)+ ' months' 
+    AS EXPERIENCE
+FROM WORKER
+ORDER BY YEARS DESC, MONTHS DESC
