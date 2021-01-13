@@ -203,7 +203,9 @@ FROM Worker;
 SELECT * FROM CLONED_TABLE
 
 --Q-29. Write an SQL query to fetch intersecting records of two tables.
-
+SELECT WORKER_ID FROM Worker
+INTERSECT
+SELECT WORKER_REF_ID FROM Title 
 
 
 --Q-30. Write an SQL query to show records from one table that another table does not have.
@@ -216,15 +218,23 @@ SELECT GETDATE();
 
 
 --Q-32. Write an SQL query to show the top n (say 10) records of a table.
-
+SELECT TOP 10 * FROM Worker ORDER BY WORKER_ID ASC
 
 
 --Q-33. Write an SQL query to determine the nth (say n=5) highest salary from a table.
-
+SELECT DISTINCT TOP 5 SALARY  INTO #TEMPTABLE FROM Worker ORDER BY SALARY DESC
+SELECT * FROM #TEMPTABLE
+SELECT TOP 1 * FROM #TEMPTABLE ORDER BY SALARY ASC
+DROP TABLE #TEMPTABLE
 
 
 --Q-34. Write an SQL query to determine the 5th highest salary without using TOP or limit method.
-
+SELECT WORKER_ID, SALARY FROM Worker W1
+WHERE 4 = --(N - 1)
+(
+	SELECT COUNT (DISTINCT SALARY) FROM Worker W2
+	WHERE W2.SALARY > W1.SALARY
+)
 
 
 --Q-35. Write an SQL query to fetch the list of employees with the same salary.
@@ -235,60 +245,86 @@ AND W1.WORKER_ID <> W2.WORKER_ID
 
 
 --Q-36. Write an SQL query to show the second highest salary from a table.
-
+SELECT DISTINCT TOP 3 SALARY, CONCAT(FIRST_NAME, ' ', LAST_NAME) AS NAME FROM Worker
+ORDER BY SALARY DESC
 
 
 --Q-37. Write an SQL query to show one row twice in results from a table.
-
+SELECT * FROM worker WHERE FIRST_NAME = 'Monika'
+union ALL
+SELECT * FROM worker WHERE FIRST_NAME = 'Monika';
 
 
 --Q-38. Write an SQL query to fetch intersecting records of two tables.
-
+SELECT WORKER_ID FROM Worker
+INTERSECT
+SELECT WORKER_REF_ID FROM Title 
 
 
 --Q-39. Write an SQL query to fetch the first 50% records from a table.
-
+SELECT * FROM Worker WHERE
+WORKER_ID <= (SELECT COUNT(WORKER_ID)/2 FROM Worker)
 
 
 --Q-40. Write an SQL query to fetch the departments that have less than five people in it.
-
-
+SELECT DEPARTMENT, COUNT(WORKER_ID) as NUM INTO #TEMPTABLE
+FROM Worker
+GROUP BY DEPARTMENT
+SELECT * FROM #TEMPTABLE
+SELECT * FROM #TEMPTABLE WHERE NUM < 4
+DROP TABLE #TEMPTABLE
 
 
 --Q-41. Write an SQL query to show all departments along with the number of people in there.
-
+SELECT DEPARTMENT, COUNT(WORKER_ID) as NUM
+FROM Worker
+GROUP BY DEPARTMENT
 
 
 --Q-42. Write an SQL query to show the last record from a table.
-
+SELECT TOP 1 * FROM Worker ORDER BY WORKER_ID DESC
 
 
 --Q-43. Write an SQL query to fetch the first row of a table.
-
+SELECT TOP 1 * FROM Worker ORDER BY WORKER_ID ASC
 
 
 --Q-44. Write an SQL query to fetch the last five records from a table.
-
+SELECT TOP 5 * INTO #TEMPTABLE FROM Worker ORDER BY WORKER_ID DESC
+SELECT * FROM #TEMPTABLE ORDER BY WORKER_ID ASC
+DROP TABLE #TEMPTABLE
 
 
 --Q-45. Write an SQL query to print the name of employees having the highest salary in each department.
-
+SELECT MAX(SALARY), DEPARTMENT FROM Worker 
+GROUP BY DEPARTMENT
 
 
 --Q-46. Write an SQL query to fetch three max salaries from a table.
-
+SELECT DISTINCT TOP 3 SALARY, COUNT(WORKER_ID) AS NO_OF_EMP FROM Worker
+GROUP BY SALARY
+ORDER BY SALARY DESC
 
 
 --Q-47. Write an SQL query to fetch three min salaries from a table.
-
+SELECT DISTINCT TOP 3 SALARY, COUNT(WORKER_ID) AS NO_OF_EMP FROM Worker
+GROUP BY SALARY
+ORDER BY SALARY ASC
 
 
 --Q-48. Write an SQL query to fetch nth max salaries from a table.
-
+SELECT WORKER_ID, SALARY FROM Worker W1
+WHERE 6 = --(N - 1)
+(
+	SELECT COUNT (DISTINCT SALARY) FROM Worker W2
+	WHERE W2.SALARY > W1.SALARY
+)
 
 
 --Q-49. Write an SQL query to fetch departments along with the total salaries paid for each of them.
-
+SELECT DEPARTMENT, SUM(SALARY) AS TOTAL_SALARY FROM Worker
+GROUP BY DEPARTMENT
+ORDER BY TOTAL_SALARY DESC
 
 
 --Q-50. Write an SQL query to fetch the names of workers who earn the highest salary.
