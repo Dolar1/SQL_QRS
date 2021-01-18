@@ -75,6 +75,39 @@ values
 (003, 'Lead', CONVERT(Datetime, '2016-06-11 00:00:00', 120));
 
 
+--------------------------------------------
+	--TESTING AGGREGATE FUNCTIONS
+	--MAX/MIN/AVG/SUM/COUNT
+--------------------------------------------
+
+SELECT MAX(BONUS_AMOUNT), MIN(BONUS_AMOUNT) FROM BONUS
+
+SELECT WORKER_REF_ID, SUM(BONUS_AMOUNT) FROM Bonus B1
+GROUP BY WORKER_REF_ID
+
+SELECT * INTO #TEMPTABLE FROM WORKER W1
+FULL OUTER JOIN
+Bonus B1
+ON W1.WORKER_ID = B1.WORKER_REF_ID
+
+SELECT * FROM #TEMPTABLE
+DROP TABLE #TEMPTABLE
+
+
+SELECT WORKER_REF_ID AS REF, SUM(BONUS_AMOUNT) AS TOTAL_BONUS INTO #TEMPTABLE 
+FROM Bonus B1
+GROUP BY WORKER_REF_ID
+SELECT * FROM #TEMPTABLE
+
+SELECT FIRST_NAME, LAST_NAME, TOTAL_BONUS FROM WORKER W1
+INNER JOIN #TEMPTABLE B1
+ON W1.WORKER_ID = B1.REF
+ORDER BY TOTAL_BONUS ASC
+
+--------------------------------------------
+	-- END TESTING
+--------------------------------------------
+
 ------------------------------------------------------------------------
 							--Exercise:
 ------------------------------------------------------------------------
@@ -91,16 +124,22 @@ SELECT UPPER(FIRST_NAME) AS WORKER_NAME FROM WORKER;
 SELECT DISTINCT DEPARTMENT FROM WORKER;
 
 
+
+
 --Q-4. Write an SQL query to print the first three characters of  FIRST_NAME from Worker table.
 SELECT  SUBSTRING(FIRST_NAME, 1, 3) FROM WORKER;
 
 
---Q-5. Write an SQL query to find the position of the alphabet (‘a’) in the first name column ‘Amitabh’ from Worker table.
 
+
+--Q-5. Write an SQL query to find the position of the alphabet (‘a’) in the first name column ‘Amitabh’ from Worker table.
+SELECT CHARINDEX('a', 'Amitabh', 3) AS MatchPosition;
 
 
 --Q-6. Write an SQL query to print the FIRST_NAME from Worker table after removing white spaces from the right side.
 SELECT RTRIM(FIRST_NAME) FROM WORKER;
+
+
 
 
 --Q-7. Write an SQL query to print the DEPARTMENT from Worker table after removing white spaces from the left side.
@@ -111,16 +150,22 @@ SELECT LTRIM(DEPARTMENT) FROM WORKER;
 SELECT DISTINCT DEPARTMENT, LEN(DEPARTMENT) FROM WORKER;
 
 
+
+
 --Q-9. Write an SQL query to print the FIRST_NAME from Worker table after replacing ‘a’ with ‘A’.
 SELECT REPLACE(FIRST_NAME, 'a', 'A') FROM WORKER;
+
 
 
 --Q-10. Write an SQL query to print the FIRST_NAME and LAST_NAME from Worker table into a single column COMPLETE_NAME. A space char should separate them.
 SELECT CONCAT(FIRST_NAME, ' ', LAST_NAME) AS COMPLETE_NAME FROM WORKER;
 
 
+
 --Q-11. Write an SQL query to print all Worker details from the Worker table order by FIRST_NAME Ascending.
 SELECT * FROM Worker ORDER BY FIRST_NAME ASC
+
+
 
 
 --Q-12. Write an SQL query to print all Worker details from the Worker table order by FIRST_NAME Ascending and DEPARTMENT Descending.
@@ -129,6 +174,7 @@ SELECT * FROM Worker ORDER BY FIRST_NAME ASC , DEPARTMENT DESC
 
 --Q-13. Write an SQL query to print details for Workers with the first name as “Vipul” and “Satish” from Worker table.
 SELECT * FROM Worker WHERE FIRST_NAME IN ('Vipul','Satish')
+
 
 
 --Q-14. Write an SQL query to print details of workers excluding first names, “Vipul” and “Satish” from Worker table.
@@ -142,12 +188,17 @@ DROP TABLE #TEMPTABLE
 SELECT * FROM Worker WHERE DEPARTMENT LIKE ('Admin')
 
 
+
 --Q-16. Write an SQL query to print details of the Workers whose FIRST_NAME contains ‘a’.
 SELECT * FROM Worker WHERE FIRST_NAME LIKE ('%a%')
 
 
+
+
 --Q-17. Write an SQL query to print details of the Workers whose FIRST_NAME ends with ‘a’.
 SELECT * FROM Worker WHERE FIRST_NAME LIKE ('%a')
+
+
 
 
 --Q-18. Write an SQL query to print details of the Workers whose FIRST_NAME ends with ‘h’ and contains six alphabets.
@@ -164,12 +215,14 @@ SELECT * FROM Worker WHERE SALARY BETWEEN 100000 AND 500000;
 SELECT * FROM Worker WHERE YEAR(JOINING_DATE) = 2014 AND MONTH(JOINING_DATE) = 2
 
 
+
 --Q-21. Write an SQL query to fetch the count of employees working in the department ‘Admin’.
 SELECT COUNT(DEPARTMENT) FROM WORKER WHERE DEPARTMENT LIKE ('Admin');
 
 
 --Q-22. Write an SQL query to fetch worker names with salaries >= 50000 and <= 100000.
 SELECT CONCAT(FIRST_NAME, ' ', LAST_NAME) AS COMPLETE_NAME FROM  WORKER WHERE SALARY >= 100000 AND SALARY <= 500000;
+
 
 
 --Q-23. Write an SQL query to fetch the no. of workers for each department in the descending order.
@@ -186,11 +239,14 @@ AND T.WORKER_TITLE in ('Manager');
 
 
 --Q-25. Write an SQL query to fetch duplicate records having matching data in some fields of a table.
+SELECT WORKER_TITLE, AFFECTED_FROM, COUNT(*) FROM TitLe
+GROUP BY WORKER_TITLE, AFFECTED_FROM HAVING COUNT(*) > 1
 
 
 
 --Q-26. Write an SQL query to show only odd number workers from a table.
 SELECT * FROM Worker WHERE WORKER_ID % 2 = 1;
+
 
 
 --Q-27. Write an SQL query to show only even number from a table.
@@ -201,6 +257,7 @@ SELECT * FROM Worker WHERE WORKER_ID % 2 = 0;
 SELECT * INTO CLONED_TABLE
 FROM Worker;
 SELECT * FROM CLONED_TABLE
+DROP TABLE CLONED_TABLE
 
 --Q-29. Write an SQL query to fetch intersecting records of two tables.
 SELECT WORKER_ID FROM Worker
@@ -219,6 +276,7 @@ SELECT GETDATE();
 
 --Q-32. Write an SQL query to show the top n (say 10) records of a table.
 SELECT TOP 10 * FROM Worker ORDER BY WORKER_ID ASC
+
 
 
 --Q-33. Write an SQL query to determine the nth (say n=5) highest salary from a table.
@@ -289,10 +347,12 @@ SELECT TOP 1 * FROM Worker ORDER BY WORKER_ID DESC
 SELECT TOP 1 * FROM Worker ORDER BY WORKER_ID ASC
 
 
+
 --Q-44. Write an SQL query to fetch the last five records from a table.
 SELECT TOP 5 * INTO #TEMPTABLE FROM Worker ORDER BY WORKER_ID DESC
 SELECT * FROM #TEMPTABLE ORDER BY WORKER_ID ASC
 DROP TABLE #TEMPTABLE
+
 
 
 --Q-45. Write an SQL query to print the name of employees having the highest salary in each department.
@@ -341,6 +401,18 @@ SELECT * FROM #TEMPTABLE
 ORDER BY BONUS_AMOUNT DESC
 DROP TABLE #TEMPTABLE
 
+				--OR--
+
+SELECT WORKER_REF_ID AS REF, SUM(BONUS_AMOUNT) AS TOTAL_BONUS INTO #TEMPTABLE 
+FROM Bonus B1
+GROUP BY WORKER_REF_ID
+--SELECT * FROM #TEMPTABLE
+
+SELECT CONCAT(FIRST_NAME, ' ' ,LAST_NAME) AS NAME, TOTAL_BONUS FROM WORKER W1
+INNER JOIN #TEMPTABLE B1
+ON W1.WORKER_ID = B1.REF
+ORDER BY TOTAL_BONUS DESC
+DROP TABLE #TEMPTABLE
 
 --Q-52. Whoever is not having bonus should be given a default bonus of 1000 and included in the list above 
 SELECT WORKER_ID, FIRST_NAME, SALARY, 1000 AS BONUS_AMOUNT INTO #TEMPTABLE
@@ -361,7 +433,8 @@ SELECT
     convert(varchar(2),DATEDIFF(MONTH, JOINING_DATE, GETDATE()) % 12)+ ' months' 
     AS EXPERIENCE
 FROM WORKER
-ORDER BY YEARS DESC
+ORDER BY YEARS DESC, MONTHS DESC
+
 
 
 --Q-54. Update the bonus table to give a bonus of 1000 /- for those people for whom there is no BONUS.
@@ -369,8 +442,24 @@ SELECT * INTO #TEMPTABLE FROM WORKER W1
 FULL OUTER JOIN
 Bonus B1
 ON W1.WORKER_ID = B1.WORKER_REF_ID
-SELECT WORKER_ID, FIRST_NAME, SALARY,  ISNULL(BONUS_AMOUNT, 1000 ) FROM #TEMPTABLE
+SELECT WORKER_ID, FIRST_NAME, SALARY,  ISNULL(BONUS_AMOUNT, 1000 ) AS BONUS FROM #TEMPTABLE
 ORDER BY BONUS_AMOUNT DESC
+DROP TABLE #TEMPTABLE
+
+		--OR--
+
+
+SELECT * INTO #TEMPBONUS FROM Bonus
+SELECT WORKER_REF_ID AS REF, SUM(BONUS_AMOUNT) AS TOTAL_BONUS INTO #TEMPTABLE 
+FROM #TEMPBONUS B1
+GROUP BY WORKER_REF_ID
+--SELECT * FROM #TEMPTABLE
+
+SELECT CONCAT(FIRST_NAME, ' ' ,LAST_NAME) AS NAME, ISNULL(TOTAL_BONUS, 1000 ) FROM WORKER W1
+FULL OUTER JOIN #TEMPTABLE B1
+ON W1.WORKER_ID = B1.REF
+ORDER BY TOTAL_BONUS DESC
+DROP TABLE #TEMPBONUS
 DROP TABLE #TEMPTABLE
 
 
@@ -381,7 +470,7 @@ DROP TABLE #TEMPTABLE
 --Q-56. Display employee details with their total experience in the company, rank them accordingly.
 SELECT * FROM WORKER
 SELECT 
-	WORKER_ID, FIRST_NAME, LAST_NAME, DEPARTMENT,
+	CONCAT(FIRST_NAME, ' ' ,LAST_NAME) AS NAME, DEPARTMENT,
 	convert(INT,DATEDIFF(MONTH, JOINING_DATE, GETDATE())/12) AS YEARS,
 	convert(INT,DATEDIFF(MONTH, JOINING_DATE, GETDATE()) % 12) AS MONTHS,
     convert(varchar(3),DATEDIFF(MONTH, JOINING_DATE, GETDATE())/12) +' years '+
